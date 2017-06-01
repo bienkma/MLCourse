@@ -26,8 +26,20 @@ def delta(X, y):
     XT = np.transpose(X)
     return np.multiply(np.linalg.inv(np.matmul(XT, X)), (np.matmul(XT, y)))
 
+def convert(Matrix):
+    """
+    replace M = 1 & B = 0
+    """
+    for it in xrange(len(Matrix)):
+        if Matrix[it] == 'M':
+            Matrix[it] = 1
+        else:
+            Matrix[it] = 0
+    return np.asanyarray(Matrix, dtype=float)
 
 if __name__ == '__main__':
-    y = load_data_set()[:, 1]
+
     X = load_data_set()[:, 2:]
+    y = load_data_set()[:, 1]
+    print convert(y)
     print("Delta is {0}".format(delta(X, y)))
