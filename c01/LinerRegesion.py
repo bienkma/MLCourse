@@ -23,8 +23,7 @@ def delta(X, y):
     """
     X = np.asarray(X, dtype=float)
     y = np.asarray(y, dtype=float)
-    XT = np.transpose(X)
-    return np.multiply(np.linalg.inv(np.matmul(XT, X)), (np.matmul(XT, y)))
+    return np.dot(np.linalg.inv(np.dot(X.T, X)), (np.dot(X.T, y)))
 
 def convert(Matrix):
     """
@@ -32,14 +31,30 @@ def convert(Matrix):
     """
     for it in xrange(len(Matrix)):
         if Matrix[it] == 'M':
-            Matrix[it] = 1
-        else:
             Matrix[it] = 0
+        else:
+            Matrix[it] = 1
     return np.asanyarray(Matrix, dtype=float)
 
-if __name__ == '__main__':
+def qr_solution(Q,R,y):
+    """
+    R * delta = Q^T*y
+    :return: delta
+    """
+    vp = np.dot(Q.T, y)
+    x = np.linalg.solve(R, vp)
+    return x
 
-    X = load_data_set()[:, 2:]
+if __name__ == '__main__':
+    bias = np.ones((569,1), dtype=float)
+    # Choice 10 feature important
+    X = load_data_set()[:, 2:12]
+    X = np.append(bias, X, 1)
     y = load_data_set()[:, 1]
-    print convert(y)
-    print("Delta is {0}".format(delta(X, y)))
+    y = convert(y)
+    delta_result = delta(X, y)
+    print("Standard equations solution. Delta = {0}".format(delta_result))
+    # calculate qr
+    Q, R = np.linalg.qr(X)
+    qr_solution_result = qr_solution(Q, R, y)
+    print "QR solution. Delta: {0}".format(qr_solution_result)
